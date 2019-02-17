@@ -16,16 +16,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
+        android:onClick="myClickListener"
         android:focusable="true"
         android:descendantFocusability="blocksDescendants">
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:id="@+id/ad_image"
+            android:layout_width="@dimen/image_size"
+            android:layout_height="@dimen/image_size"
+            android:layout_margin="@dimen/button_margin"/>
         <TextView
             android:id="@+id/ad_text"
-            android:text="This will be an ad"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:text="This will be an ad!"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"/>
 
     </LinearLayout>
 

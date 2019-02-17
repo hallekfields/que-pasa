@@ -1,11 +1,13 @@
 package edu.miami.cs.hallefields.quepasa;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 
 //=============================================================================
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         viewArea.loadUrl(contentUrl);
 
         // load ad
+        ((ImageView)findViewById(R.id.ad_image)).setImageResource(R.drawable.montecristiorg);
 
     }
     //-----------------------------------------------------------------------------
@@ -55,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
                         "edu.miami.cs.hallefields.quepasa.PostActivity");
                 startActivityForResult(nextActivity, ACTIVITY_POST);
                 break;
+            case R.id.ad_view:
+                Uri uri = Uri.parse("http://www.montecristi.org");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
             default:
                 break;
         }
