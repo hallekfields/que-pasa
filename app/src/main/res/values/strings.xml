@@ -3,4 +3,8 @@
     <string name = "post">Submit a post!</string>
     <string name = "content_url">https://monte-cristi.000webhostapp.com/mobile-home</string>
     <string name = "admin_email">hallekfields@miami.edu</string>
+    <string name = "submit_post">"Submit post"</string>
+    <string name="hint_title">Title of Post</string>
+    <string name="hint_description">Description of Post</string>
+    <string name = "post_toolbar">"Submit a post"</string>
 </resources>

@@ -1,5 +1,6 @@
 package edu.miami.cs.hallefields.quepasa;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -10,6 +11,9 @@ import android.webkit.WebViewClient;
 public class MainActivity extends AppCompatActivity {
 
     //-----------------------------------------------------------------------------
+
+    private static final int ACTIVITY_POST = 1;
+
     private WebView viewArea;
     //-----------------------------------------------------------------------------
     @Override
@@ -37,11 +41,25 @@ public class MainActivity extends AppCompatActivity {
         // load page
         contentUrl = getResources().getString(R.string.content_url);
         viewArea.loadUrl(contentUrl);
-    }
-    //-----------------------------------------------------------------------------
-    public void myClickHandler(View view) {
+
+        // load ad
 
     }
+    //-----------------------------------------------------------------------------
+    public void myClickListener(View view) {
+
+        switch (view.getId()) {
+            case R.id.post_button:
+                Intent nextActivity = new Intent();
+                nextActivity.setClassName("edu.miami.cs.hallefields.quepasa",
+                        "edu.miami.cs.hallefields.quepasa.PostActivity");
+                startActivityForResult(nextActivity, ACTIVITY_POST);
+                break;
+            default:
+                break;
+        }
+    }
+//-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 }
 //=============================================================================
