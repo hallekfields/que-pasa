@@ -1,9 +1,15 @@
 package edu.miami.cs.hallefields.quepasa;
 
+import android.util.Log;
+
+import java.io.File;
 import java.util.Date;
 import java.util.Properties;
 
 import javax.activation.CommandMap;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.activation.MailcapCommandMap;
 import javax.mail.BodyPart;
 import javax.mail.Multipart;
@@ -29,6 +35,7 @@ import javax.mail.internet.MimeMultipart;
 public class Mail extends javax.mail.Authenticator {
     private String _user;
     private String _pass;
+    private String _filename;
 
     private String[] _to;
     private String _from;
@@ -57,6 +64,7 @@ public class Mail extends javax.mail.Authenticator {
         _from = ""; // email sent from
         _subject = ""; // email subject
         _body = ""; // email body
+        _filename = ""; //image file name
 
         _debuggable = false; // debug mode on or off - default off
         _auth = true; // smtp authentication - default on
@@ -74,11 +82,12 @@ public class Mail extends javax.mail.Authenticator {
         CommandMap.setDefaultCommandMap(mc);
     }
 
-    public Mail(String user, String pass) {
-        this();
+    public Mail(String user, String pass, String fileName) {
 
+        this();
         _user = user;
         _pass = pass;
+        _filename = fileName;
     }
 
     public boolean send() throws Exception {
@@ -110,6 +119,17 @@ public class Mail extends javax.mail.Authenticator {
             BodyPart messageBodyPart = new MimeBodyPart();
             messageBodyPart.setText(_body);
             _multipart.addBodyPart(messageBodyPart);
+
+            // add image if applicable
+            if (_filename != null) {
+                Log.i("INFO", "Mail.java filename is not null");
+                BodyPart imageBodyPart = new MimeBodyPart();
+                File f = new File(_filename);
+                DataSource source = new FileDataSource(f);
+                imageBodyPart.setDataHandler(new DataHandler(source));
+                imageBodyPart.setFileName(_filename);
+                _multipart.addBodyPart(imageBodyPart);
+            }
 
             // Put parts in message
             msg.setContent(_multipart);

@@ -2,7 +2,9 @@ package edu.miami.cs.hallefields.quepasa;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -16,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
 import java.util.GregorianCalendar;
 
 //=============================================================================
@@ -110,16 +113,31 @@ public class PostActivity extends AppCompatActivity {
 
                 if (selectedPhotoURI != null) {
                     //photo
-                    //new SendMail().execute(subject, body, selectedPhotoURI);
+                    Log.i("INFO", "selectedPhotoURI is not null");
+                    new SendMail().execute(subject, body, getPath(getApplicationContext(), selectedPhotoURI));
                     break;
                 }
-
-                new SendMail().execute(subject, body);
+                new SendMail().execute(subject, body, null);
 
                 break;
             default:
                 break;
         }
+    }
+
+    public static String getPath(Context context, Uri uri ) {
+        String result = null;
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = context.getContentResolver( ).query( uri, proj, null, null, null );
+        if(cursor != null){
+            if ( cursor.moveToFirst( ) ) {
+                int column_index = cursor.getColumnIndexOrThrow( proj[0] );
+                result = cursor.getString( column_index );
+            }
+            cursor.close( );
+        }
+        Log.i("INFO","Result is + " + result);
+        return result;
     }
 
     /**
@@ -168,7 +186,7 @@ public class PostActivity extends AppCompatActivity {
             String user, pass;
             user = getResources().getString(R.string.admin_email);
             pass = getResources().getString(R.string.admin_password);
-            Mail m = new Mail(user, pass);
+            Mail m = new Mail(user, pass, params[2]);
 
             String[] toArr = {user};
             m.setTo(toArr);

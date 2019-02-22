@@ -19,14 +19,9 @@
         android:onClick="myClickListener"
         android:focusable="true"
         android:descendantFocusability="blocksDescendants">
-        <ImageView
-            android:id="@+id/ad_image"
-            android:layout_width="@dimen/image_size"
-            android:layout_height="@dimen/image_size"
-            android:layout_margin="@dimen/button_margin"/>
         <TextView
             android:id="@+id/ad_text"
-            android:text="Visit Monte Cristi!"
+            android:text="Click Here to Visit Monte Cristi!"
             android:autoSizeTextType="uniform"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
