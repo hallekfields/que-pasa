@@ -26,7 +26,8 @@
             android:layout_margin="@dimen/button_margin"/>
         <TextView
             android:id="@+id/ad_text"
-            android:text="This will be an ad!"
+            android:text="Visit Monte Cristi!"
+            android:autoSizeTextType="uniform"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"/>

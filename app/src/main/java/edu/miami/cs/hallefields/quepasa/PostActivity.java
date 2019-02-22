@@ -1,9 +1,11 @@
 package edu.miami.cs.hallefields.quepasa;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +15,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TimePicker;
-
+import android.widget.Toast;
 import java.util.GregorianCalendar;
 
 //=============================================================================
@@ -67,6 +69,7 @@ public class PostActivity extends AppCompatActivity {
                 break;
         }
     }
+
     //-----------------------------------------------------------------------------
     public void myClickListener(View view) {
 
@@ -75,6 +78,8 @@ public class PostActivity extends AppCompatActivity {
         TimePicker timePicker;
         String title, description;
         GregorianCalendar dateTime;
+
+        String subject, body;
 
         String email = getResources().getString(R.string.admin_email);
 
@@ -98,33 +103,85 @@ public class PostActivity extends AppCompatActivity {
                         datePicker.getMonth(), datePicker.getDayOfMonth(),
                         timePicker.getCurrentHour(), timePicker.getCurrentMinute());
 
-                Intent nextIntent;
-                Log.i("INFO", "RESULT_OK");
-                nextIntent = new Intent(Intent.ACTION_SEND);
-                nextIntent.setType("application/image");
-                Log.i("INFO", "putting extras in email");
-
-                //put admin email
-                nextIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { email });
-
-                //put subject line
-                nextIntent.putExtra(Intent.EXTRA_SUBJECT, "New Post Request: " + title);
-
-                //all content from user
-                nextIntent.putExtra(Intent.EXTRA_TEXT, "Title: " + title + "\n" +
-                                                            "Description: " + description + "\n" +
-                                                            "Date and Time: " + dateTime.getTime());
+                subject = "New Post Request: " + title;
+                body = "Title: " + title + "\n" +
+                        "Description: " + description + "\n" +
+                        "Date and Time: " + dateTime.getTime();
 
                 if (selectedPhotoURI != null) {
                     //photo
-                    nextIntent.putExtra(Intent.EXTRA_STREAM, selectedPhotoURI);
+                    //new SendMail().execute(subject, body, selectedPhotoURI);
+                    break;
                 }
-                // send email
-                Log.i("INFO", "starting email activity");
-                startActivityForResult(nextIntent, ACTIVITY_SEND_EMAIL);
+
+                new SendMail().execute(subject, body);
+
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     *
+     * Courtesy of http://www.edumobile.org/
+     *             android/send-email-on-button-
+     *             click-without-email-chooser/
+     *
+     * Downloaded: Feb 21, 2019
+     * Modified by Halle Fields on February 21, 2019
+     *
+     */
+    private class SendMail extends AsyncTask<String, Integer, Void> {
+
+        private ProgressDialog progressDialog;
+        private boolean sent;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = ProgressDialog.show(PostActivity.this,
+                    "Please wait", "Sending mail", true, false);
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if(sent) {
+                Toast.makeText(PostActivity.this,
+                        "Post was sent successfully.", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(PostActivity.this,
+                        "Post could not be sent. Try again!", Toast.LENGTH_LONG).show();
+            }
+
+            progressDialog.dismiss();
+
+            // return to homepage
+            Intent nextActivity = new Intent();
+            nextActivity.setClassName("edu.miami.cs.hallefields.quepasa",
+                    "edu.miami.cs.hallefields.quepasa.MainActivity");
+            startActivity(nextActivity);
+        }
+
+        protected Void doInBackground(String... params) {
+            String user, pass;
+            user = getResources().getString(R.string.admin_email);
+            pass = getResources().getString(R.string.admin_password);
+            Mail m = new Mail(user, pass);
+
+            String[] toArr = {user};
+            m.setTo(toArr);
+            m.setFrom(user);
+            m.setSubject(params[0]);
+            m.setBody(params[1]);
+
+            try {
+                sent = m.send();
+            } catch(Exception e) {
+                Log.e("MailApp", "Could not send email", e);
+            }
+            return null;
         }
     }
 //-----------------------------------------------------------------------------

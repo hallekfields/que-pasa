@@ -30,7 +30,10 @@ public class MainActivity extends AppCompatActivity {
         //----Load zoomed out to fit
         viewArea.getSettings().setLoadWithOverviewMode(true);
         //----Make the viewport "normal", rather than the size of the webview
-        viewArea.getSettings().setUseWideViewPort(false);
+        viewArea.getSettings().setUseWideViewPort(true);
+        //----Enable javascript for site
+        viewArea.getSettings().setJavaScriptEnabled(true);
+
         viewArea.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view,String url) {
@@ -38,8 +41,12 @@ public class MainActivity extends AppCompatActivity {
                 return(false);
             }
         });
+
         //----Turn on the zoom controls
+        viewArea.getSettings().setSupportZoom(true);
         viewArea.getSettings().setBuiltInZoomControls(true);
+        viewArea.getSettings().setDisplayZoomControls(false);
+
         // load page
         contentUrl = getResources().getString(R.string.content_url);
         viewArea.loadUrl(contentUrl);
