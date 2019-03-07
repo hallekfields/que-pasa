@@ -13,12 +13,15 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.util.GregorianCalendar;
 
 //=============================================================================
@@ -27,6 +30,8 @@ public class PostActivity extends AppCompatActivity {
     private static final int ACTIVITY_SELECT_PICTURE = 1;
     private static final int ACTIVITY_SEND_EMAIL = 2;
     Uri selectedPhotoURI;
+
+    private boolean dateTimeBool;
     //-----------------------------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,24 @@ public class PostActivity extends AppCompatActivity {
         Log.i("INFO", "onCreate");
         setContentView(R.layout.activity_post);
         ((ImageView)findViewById(R.id.select_photo)).setImageResource(R.drawable.clickhere);
+
+        Switch toggle = findViewById(R.id.datetime_switch);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    dateTimeBool = true;
+                    findViewById(R.id.start).setVisibility(View.VISIBLE);
+                    findViewById(R.id.end).setVisibility(View.VISIBLE);
+
+                } else {
+                    // The toggle is disabled
+                    dateTimeBool = false;
+                    findViewById(R.id.start).setVisibility(View.GONE);
+                    findViewById(R.id.end).setVisibility(View.GONE);
+                }
+            }
+        });
     }
     //-----------------------------------------------------------------------------
     @Override
@@ -76,10 +99,10 @@ public class PostActivity extends AppCompatActivity {
     //-----------------------------------------------------------------------------
     public void myClickListener(View view) {
 
-        EditText titleView, descriptionView;
+        EditText titleView, descriptionView, locationView, urlView;
         DatePicker datePicker;
         TimePicker timePicker;
-        String title, description;
+        String title, description, location, url;
         GregorianCalendar dateTime;
 
         String subject, body;
@@ -97,19 +120,41 @@ public class PostActivity extends AppCompatActivity {
                 // get all text and date fields
                 titleView = findViewById(R.id.post_title);
                 descriptionView = findViewById(R.id.post_description);
-                datePicker = findViewById(R.id.date_picker);
-                timePicker = findViewById(R.id.time_picker);
+                locationView = findViewById(R.id.post_location);
+                urlView = findViewById(R.id.post_url);
 
                 title = titleView.getText().toString().trim();
                 description  = descriptionView.getText().toString().trim();
-                dateTime = new GregorianCalendar(datePicker.getYear(),
-                        datePicker.getMonth(), datePicker.getDayOfMonth(),
-                        timePicker.getCurrentHour(), timePicker.getCurrentMinute());
+                location = locationView.getText().toString().trim();
+                url = urlView.getText().toString().trim();
+
 
                 subject = "New Post Request: " + title;
                 body = "Title: " + title + "\n" +
                         "Description: " + description + "\n" +
-                        "Date and Time: " + dateTime.getTime();
+                        "Location: " + location + "\n" +
+                        "URL: " + url + "\n" +
+                        "Time Submitted: " + DateFormat.getInstance().format(System.currentTimeMillis()) + "\n";
+
+                if (dateTimeBool) {
+                    datePicker = findViewById(R.id.date_picker_start);
+                    timePicker = findViewById(R.id.time_picker_start);
+
+                    dateTime = new GregorianCalendar(datePicker.getYear(),
+                            datePicker.getMonth(), datePicker.getDayOfMonth(),
+                            timePicker.getCurrentHour(), timePicker.getCurrentMinute());
+
+                    body += "Start: " + dateTime.getTime() + "\n";
+
+                    datePicker = findViewById(R.id.date_picker_end);
+                    timePicker = findViewById(R.id.time_picker_end);
+
+                    dateTime = new GregorianCalendar(datePicker.getYear(),
+                            datePicker.getMonth(), datePicker.getDayOfMonth(),
+                            timePicker.getCurrentHour(), timePicker.getCurrentMinute());
+
+                    body += "End: " + dateTime.getTime() + "\n";
+                }
 
                 if (selectedPhotoURI != null) {
                     //photo

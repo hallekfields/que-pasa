@@ -1,12 +1,30 @@
 package edu.miami.cs.hallefields.quepasa;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 //=============================================================================
 public class MainActivity extends AppCompatActivity {
@@ -16,6 +34,12 @@ public class MainActivity extends AppCompatActivity {
     private static final int ACTIVITY_POST = 1;
 
     private WebView viewArea;
+
+    private String ad;
+    private String adTitle;
+    private Bitmap adBitmap;
+
+    private boolean complete = false;
     //-----------------------------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // hide ad until loaded
+        findViewById(R.id.ad_view).setVisibility(View.GONE);
+
+        // set-up webview
         viewArea = findViewById(R.id.content_view);
         //----Load zoomed out to fit
         viewArea.getSettings().setLoadWithOverviewMode(true);
@@ -36,8 +64,20 @@ public class MainActivity extends AppCompatActivity {
         viewArea.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view,String url) {
-                view.loadUrl(url);
-                return(false);
+                if (!url.contains("https://monte-cristi.000webhostapp.com")) {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(url));
+                        startActivity(intent);
+                        return true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    viewArea.loadUrl(url);
+                }
+                return false;
             }
         });
 
@@ -51,8 +91,17 @@ public class MainActivity extends AppCompatActivity {
         viewArea.loadUrl(contentUrl);
 
         // load ad
-        //((ImageView)findViewById(R.id.ad_image)).setImageResource(R.drawable.montecristiorg);
+        thread.start();
+        while (!complete) {}
 
+        ((TextView)findViewById(R.id.ad_text)).setText(adTitle);
+        try {
+            ImageView imageView = findViewById(R.id.ad_image);
+            imageView.setImageBitmap(adBitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        findViewById(R.id.ad_view).setVisibility(View.VISIBLE);
     }
     //-----------------------------------------------------------------------------
     public void myClickListener(View view) {
@@ -65,14 +114,86 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(nextActivity, ACTIVITY_POST);
                 break;
             case R.id.ad_view:
-                Uri uri = Uri.parse("http://www.montecristi.org");
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
+                viewArea.loadUrl(ad);
+                break;
             default:
                 break;
         }
     }
-//-----------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    if (viewArea.canGoBack()) {
+                        viewArea.goBack();
+                    } else {
+                        //finish();
+                    }
+                    return true;
+            }
+
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    //-----------------------------------------------------------------------------
+    public String getRandomAd() {
+        List<String> urlList = new ArrayList<>();
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(getResources().getString(R.string.site_map)).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Elements urls = doc.getElementsByTag("loc");
+
+        for (Element url : urls) {
+            if (url.toString().contains("advertisements"))
+                urlList.add(url.text());
+        }
+
+        int randIndex = (int)(Math.random() * ((urlList.size())));
+        return urlList.get(randIndex);
+    }
+    //-----------------------------------------------------------------------------
+    public void getAdData() {
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(ad).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Elements title = doc.getElementsByClass("entry-title");
+        Elements image = doc.getElementsByClass("featured-img");
+        image = image.get(0).children();
+
+        adTitle = title.get(0).text();
+        String adImage = image.get(0).attr("src");
+        try {
+            Log.i("INFO", adImage);
+            adBitmap = BitmapFactory.decodeStream((InputStream)new URL(adImage).getContent());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    //-----------------------------------------------------------------------------
+    Thread thread = new Thread(new Runnable(){
+        public void run() {
+            try {
+                ad = getRandomAd();
+                getAdData();
+                complete = true;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    });
 //-----------------------------------------------------------------------------
 }
 //=============================================================================
