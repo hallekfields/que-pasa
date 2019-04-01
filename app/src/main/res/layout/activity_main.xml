@@ -2,7 +2,8 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:id="@+id/ad_view"
@@ -19,7 +20,7 @@
             android:layout_width="wrap_content"
             android:maxLines="1"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/ad_text_size"
+            app:autoSizeTextType="uniform"
             android:padding="@dimen/button_margin"/>
 
         <ImageView
@@ -29,12 +30,25 @@
             android:layout_gravity="center"/>
     </LinearLayout>
 
-    <WebView
-        android:id="@+id/content_view"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="3">
-    </WebView>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <WebView
+                android:id="@+id/content_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            </WebView>
+
+        </android.support.v4.widget.NestedScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <Button
         android:id="@+id/post_button"

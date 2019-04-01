@@ -1,15 +1,20 @@
 <resources>
-    <string name = "app_name">QuePasa</string>
-    <string name = "post">Submit a post!</string>
-    <string name = "content_url">https://monte-cristi.000webhostapp.com/</string>
-    <string name = "site_map">https://monte-cristi.000webhostapp.com/post-sitemap.xml</string>
-    <string name = "admin_email">posts.montecristi@gmail.com</string>
-    <string name = "admin_password">a1d2m3i4n5</string>
-    <string name = "submit_post">"Submit post"</string>
-    <string name = "hint_title">Title</string>
-    <string name = "hint_location">Location</string>
+    <string name="app_name">QuePasa</string>
+    <string name="post">Submit a post!</string>
+    <string name="content_url">https://monte-cristi.000webhostapp.com/</string>
+    <string name="site_map">https://monte-cristi.000webhostapp.com/post-sitemap.xml</string>
+    <string name="admin_email">posts.montecristi@gmail.com</string>
+    <string name="admin_password">a1d2m3i4n5</string>
+    <string name="submit_post">"Submit post"</string>
+    <string name="hint_title">Title</string>
+    <string name="hint_location">Location</string>
     <string name="hint_description">Description</string>
-    <string name = "post_toolbar">"Submit a post"</string>
+    <string name="post_toolbar">"Submit a post"</string>
     <string name="date_and_time">Date and Time?</string>
     <string name="hint_url">URL</string>
+    <string name="no_connection">Check your internet connection and restart the application</string>
+    <string name="connection_title">No Internet Connection</string>
+    <string name="close">OK</string>
+    <string name="title_activity_form">FormActivity</string>
+    <string name="form_url">https://monte-cristi.000webhostapp.com/submit-post/</string>
 </resources>
